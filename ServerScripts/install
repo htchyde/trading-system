@@ -1,0 +1,7 @@
+#!/bin/bash
+
+apt-get install aptitude
+aptitude install mysql-server
+aptitude install r-base # R Script
+aptitude install libxml2-dev # required for the "XML" R Library
+aptitude install libmysqlclient-dev

@@ -1,0 +1,30 @@
+#!/bin/bash
+# Creates the directory structure for a Trading Strategy Repository inside the
+# path passed as an arguement
+
+declare -r REPO_NAME=TradingSystem
+
+createRepositoryStructure(){
+	local REPO_PARENT_DIR=$1
+	local REPO_PATH=$REPO_PARENT_DIR/$REPO_NAME
+
+	if [ -d REPO_PATH ]
+		then
+		mkdir -p $REPO_PATH/Data/{Local,Remote}
+		mkdir -p $REPO_PATH/Doc/{Backtesting,DataManagement,Execution,PerformanceAnalysis,RiskManagement,Signals,Util}
+		mkdir -p $REPO_PATH/Output/{Backtest-performance,Live-performance,Iteration-test-results,Temp}
+		mkdir -p $REPO_PATH/PreviousIterations
+		mkdir -p $REPO_PATH/R/{Backtesting,DataManagement,Execution,PerformanceAnalysis,RiskManagement,Signals,Util}/{Functions,Scripts}
+		mkdir -p $REPO_PATH/R/ImplementationTests/{Backtesting,DataManagement,Execution,PerformanceAnalysis,RiskManagement,Signals,Util}/{Scripts}
+		mkdir -p $REPO_PATH/ServerScripts/{DirectoryStructurer,JobScheduler}
+		mkdir -p $REPO_PATH/ToDo/{Backtesting,DataManagement,Execution,PerformanceAnalysis,RiskManagement,Signals,Util}
+		echo "Success: TradingSystem repository created inside of '"$(readlink -f $REPO_PARENT_DIR)"'"
+	else
+		echo "Failure: TradingSystem repository already exists"
+	fi
+}
+
+for repo_parent_dir in $@; do
+	createRepositoryStructure $repo_parent_dir
+
+done

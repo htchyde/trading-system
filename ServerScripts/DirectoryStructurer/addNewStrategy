@@ -1,0 +1,29 @@
+#!/bin/bash
+declare -r RELATIVE_PATH_TO_ROOT=../..
+
+# enter list of strategy names as arguements to script
+createStrategyDirectories(){
+	local strategy_name=$1
+	local STRATEGIES_DIR=$RELATIVE_PATH_TO_ROOT/R/TradingStrategies/$strategy_name
+	local TESTS_DIR=$RELATIVE_PATH_TO_ROOT/R/ImplementationTests/TradingStrategies/$strategy_name
+	local DOC_DIR=$RELATIVE_PATH_TO_ROOT/Doc/TradingStrategies/$strategy_name
+	local TODO_DIR=$RELATIVE_PATH_TO_ROOT/ToDo/TradingStrategies/$strategy_name
+	local PREVIOUSITERATIONS_DIR=$RELATIVE_PATH_TO_ROOT/PreviousIterations/TradingStrategies/$strategy_name
+
+	if [ -d	$STRATEGIES_DIR ] || [ -d $TESTS_DIR ] || [ -d $DOC_DIR ] || [ -d $TODO_DIR ] || [ -d $PREVIOUSITERATIONS_DIR ]
+	then
+		echo "Failure: Strategy with name '"$strategy_name"' already exists"
+	else
+		mkdir -p $STRATEGIES_DIR/{Functions,Scripts}
+		mkdir -p $TESTS_DIR
+		mkdir -p $DOC_DIR
+		mkdir -p $TODO_DIR
+		mkdir -p $PREVIOUSITERATIONS_DIR
+
+		echo "Success: Strategy Directories for '$strategy_name' have been created"
+	fi
+}
+
+for strategy_name in $@; do
+	createStrategyDirectories $strategy_name
+done
