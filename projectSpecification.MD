@@ -137,6 +137,8 @@ Internal Actors:
 * Transcation Cost Modeller System
 * Execution System
 * Performance Analyser
+* Data Collection System
+* Data Cleaning System
 
 ***
 
@@ -151,6 +153,21 @@ Handlers for each of the Interal Actors:
 * Order Creation/Sender System
 * Transcation Cost Modeller System
 * Execution System
+* Performance Analyser System
+* Data Collection System
+* Data Cleaning System
+
+
+Data Collection System:
+Method 1: Given a ticker and exchange the data collector downloads all the data it can from all data vendors it is aware of and puts the data into the Securities Master Database.
+
+
+Data Cleaning System:
+	Method 1: Given a ticker and exchange the data cleaner corrects all missing or incorrect data from the Securities Master Database (SMD) and updates SMD with corrected data.
+	Method 2: Corrects all missing or incorrect data from the Securities Master Database and updates the SMD with the corrected data. The old data should probably be deleted to remove duplicated data and information stored on where the information is from and where it has been "corrected" or filled with a missing value. But we will err on the side of caution and not delete the dirty vendor data as it could conceivably be useful later.
+	We will use a simple technique of filling the missing data with previous values. Warnings need to be made when there is a long sequence of missing data, which should not be "corrected" and the data shouldn't be used at all for strategy implementation.
+	We store a cleaned data for each price series because we don't want to reclean data every time backtest a strategy on the data. Store clean data in clean_daily_data daily in SMD.
+	Error Detection/Correction Methods: Cross-validation, padding missing data, spike filtration
 
 ***
 
@@ -160,8 +177,10 @@ How do the main objects interact with one another?
 To see the interactions that will occur we go through step by step what will happen.
 
 0) The Zeroth step is to collect and clean data.
+
 1) First the trader specifies their requirements and constraints. These may include maximum drawdown, sharpe ratio expectations, what strategies to use, what stock universe to use, risk-apetite. Also need an optimiser function for the Portfolio Constructor to maximise.
 The trading strategies to be used should be based on empircal evidence of previous success but also fundamental reasons for why it will succeed in the future. Has there been regulation changes, market changes since the backtest performance results were peformed?
+
 2) The next step is gather the empircal evidence for each of the strategies used and to check that it is working at the moment. To do so we use hypothesis tests (which are strategy dependent) to justify the assumptions of a particular strategy.
 We also gather statistics on the maximum drawdown and sharpe ratios in the past by simulating the strategy as if it was regoing through the past. Recordings of trading costs, number of trades execution, average holding periods will also be useful data.
 The historical data is drip fed from the Master Security Database into the overall Trading System. The historical data is treated as a market event, which is stored in an event queue. 
@@ -174,10 +193,15 @@ Using the Transcation Cost Modeller, the Portfolio Constructor creates the optim
 The Market Orders are passed to the Execution System that talks with the External Brokerage Service Provider and asks it to execute the trades. 
 Once the External Brokerage Service Provider confirms an order has been filled the Trading System captures this event and passes it onto the Portfolio Constructor which then updates its current portfolio.
 This completes the backtesting execution process but we need to becareful trades aren't repeatedly made if there is a delay in execution. To avoid this the Portfolio Constructor should only be asked to create a new target portfolio AFTER all market orders have been attempted to be executed (and either succeeded or failed to be filled). Also what's going to happen if an order fails to be filled? (We'll use MARKET ORDERS and not LIMIT ORDERS so we don't have to worry about this too much)
+
 3) From the backtest results we calculate statistics of interest (Sharpe Ratio, Maximum Drawdown, etc), moving average covariances between strategies returns. We may also want to optimise the strategy - but you must be careful not to introduce optimisaition bias. You will want to do some sensitivity analysis in the case. For simplicity our strategies will be parameterless so that we don't need to worry about optimisation bias.
+
 4) Once the properties of the strategy have been determined a paper forward test should be performed on each successful strategy.
+
 5) We now have a collection of tested strategies with historical properties that we assume they will continue to have in the future. If this isn't the case the strategy needs to be temporarily paused, investigated to see what is causing the problem and either removed or adpated in response to your hypothesis to why it no longer works.
+
 6) Note the "Do nothing/hold current portfolio" is a strategy that should be implemented and one that the Portfolio Constructor should be able to use and invest capital in. 
+
 7) When should you stop executing a particular strategy? My method would be to see if the statistical properties of the price series continue to exhibt the behavouir you're exploiting. For example if a pair of stocks stop cointegrating according to some significance testing test results then you remove the strategy from the list of strategies you've suggested the system uses AND sell the positions that the strategy has suggested to take in the overall portfolio. The Portfolio Constructor should then redistribute the capital gained (or lost) from selling the factor portfolio suggested by the strategy amongst the other strategies.
 Even if the prices behave exactly as predicted - bad transaction costs can make the strategy unprofitable - so if transcation costs aren't what were expected you may need to pause the strategy. I'm not sure how you would systemise the pausing in this case...
 We would also want to stop if the current drawdown is far greater than what was seen in backtests.
@@ -191,12 +215,48 @@ The properties of a trading strategy should be tested with different transcation
 
 ##### Class Diagram
 To start our project we will make all of the actors very simple.
+
 The Portfolio Constructor will simply weight each of the strategies equally (in terms of capital depoloyed in strategy). A more advanced solution would take account of the (moving average updated) covaraince between strategies and weight according to some optimisation problem (i.e. maximal sharpe ratio).
+
 The Transcation Cost Modeller will simply only take account of commision costs and assume it takes some fixed rate.
+
 The Data Collection System will simply collect OHLC data on Large Cap Market Indices Consituients/ETFs. 
+
 The Order Creation/Execution System will simply execute trade orders as MARKET Orders (no Limit orders) at or near Market Open/Close, it won't do anything like break the orders up into smaller chunks (iceberg).
+
 The Signal Generator will simply return ADVICE on whether to buy or sell a stock and pass onto the Portfolio Constructor.
+
 The Performance Analyser will simply measure the moving-average correlations between strategies, the moving-average sharpe ratio and whether the market is behaving as expected. Also the time it takes for trade to be executed through the external brokerage service.
 
 
 
+
+
+
+
+Data Cleaning System:
+	Method 1: Given a ticker and exchange the data cleaner corrects all missing or incorrect data from the Securities Master Database (SMD) and updates SMD with corrected data.
+	Method 2: Corrects all missing or incorrect data from the Securities Master Database and updates the SMD with the corrected data. The old data should probably be deleted to remove duplicated data and information stored on where the information is from and where it has been "corrected" or filled with a missing value. But we will err on the side of caution and not delete the dirty vendor data as it could conceivably be useful later.
+	We will use a simple technique of filling the missing data with previous values. Warnings need to be made when there is a long sequence of missing data, which should not be "corrected" and the data shouldn't be used at all for strategy implementation.
+	We store a cleaned data for each price series because we don't want to reclean data every time backtest a strategy on the data. Store clean data in clean_daily_data daily in SMD.
+	Error Detection/Correction Methods: Cross-validation, padding missing data, spike filtration
+
+
+Class Fields
+
+|	Field Name					|	Description/Purpose of Class				|
+|	----------------------				|	----------------------------				|					
+|							|								|					
+|							|								|					
+|							|								|					
+
+Class Methods
+
+|	Method Name					|	Description/Purpose of Method				|
+|	----------------------				|	----------------------------				|
+|							|								|
+|							|								|
+|							|								|
+
+I feel like the class diagram should actually be created alongside implementing the class in code because it will allow you to see what problems there will be. So that's what we'll do. Let's begin coding!
+The most useful thing that I can take from creating this project specification is the iteractions description provided about, which made it much clearer in my head how everything will link together and also provides a guide to the order in which the program should be completed (in the same order as the progression of the steps).
