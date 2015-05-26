@@ -5,6 +5,8 @@ Algorithmic Trading System: Data Collection, Backtesting, Order Execution
 
 ###### This document is a draft.
 
+###### See [projectSpecification.MD](projectSpecification.MD) for the project specification.
+
 This repository will contain the implementation of an algorithmic trading system.
 
 Historical data is stored in a MySQL Database named "securities_master".
