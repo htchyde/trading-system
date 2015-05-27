@@ -21,3 +21,25 @@ To correctly fit into the new structure of this repository significant changes n
 ###### This is the initial transition towards a complete trading system that is independent of any trading strategy implemented. 
 
 See [ServerScripts/DirectoryStructurer/createRepositoryStructure](ServerScripts/DirectoryStructurer/createRepositoryStructure) for an understanding of the repository structure.
+
+#### Implementation - Programming Language Choice
+
+The Trading System will be implemented in a mixture of two programming languages, namely C++, R. These languages have been chosen because I have knowledge and experience with them, in addition to being free (with free libraries).
+Anything that requires optimal execution speed will be written in C++ due to its high performance in this regard. C++ also doesn't have automatic garabage collection which allows us to optimise for speed further, 
+many brokerage APIs are written in C++, the C++ STL provides ready-made optimised data structures/algorithms, LAPACK provides high performance linear algebra solutions for portfolio construction. Since we aren't attempting
+to create high-frequency/ultra high-frequency strategies (due to the technological hardware required) we do not require super optimal speed for everything. We therefore opt to code everything else in R. This is because 
+coding in C++ generally requires more lines of code to do the same thing in R (partly due to less quant specific libraries avaliable), is harder to debug and create statistical methods or time series analysis methods than in R - this all leads to relatively longer development times
+in the name of increasing speed performance. We'll I'm more interested in profitability of my trading system and the effectiveness of the strategies being executed, so we drop the speed performance benefits of using C++ and gain
+the benefits outlined above of using R. Overtime we may choose to optimise more and more of the trading system for speed by switching out R code for C++ code if this is the best use of our development time.
+Python could be used instead of R in some places if there are better libraries/packages available for the particular strategy that you're looking to implement. The choice of language used will depend on which one has the
+most robust, stress tested, space/time optimised algorithms that are of use for the particular strategy.
+
+With all of the above said, essentially what I currently plan to do is implement the RESEARCH/BACKTESTING parts of the trading system in R and the EXECUTION/LIVE parts in C++. Note that speed performance is really important in
+executing orders due to the slippage that will result from large latencies. As mentioned above, however, we may start by implementing in R and then shifting to C++ for speed optimisation. Reading more about OOP in R, I'm having
+second thoughts about converting this eventually into C++. We can always use Python instead however. So it's decided that we will code everything in Python except where speed is necessary we will use C++ and strategies we may
+use R or Python.
+
+C++ communicates with the MySQL Securities Master Database using MySQL C++ Connector, Python communicates with the MySQL SMD using MySQL Python Connector, R doesn't need to communicate directly to the SMD.
+We need to be careful in choosing a Broker API so that either C++ or Python can communicate with it - either directly or through some community wrapper class such as IBPy plugin for Interactive Brokerage. 
+R and Python can communicate using the RPy plugin. For data analysis in Python we will use the SciPy, NumPy and Pandas libraries. Python is great at communicating with any other system or protocol - including the internet - so
+it will be our choice for data scraping. Finally, there are ways to embed C++ code into R and Python thus completing the required communications between the different languages/databases/apis.

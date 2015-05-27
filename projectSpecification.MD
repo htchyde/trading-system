@@ -71,6 +71,8 @@ Examples: Disaster recovery, acceptable failure rates
 * System fails less than twice a year.
 * A text message, email must be sent in the event of failure so that I'm aware.
 * In the event of failure no trades are executed. The portfolio must be held. 
+* Resilence in the face of extreme events - brokerage fails, extreme volatilities occur, accidental deletion of entire trading database, coloaction server goes down - needs to be built into system.
+* Debugging, testing, logging, backups, monitoring all need to be built into the system.
 
 #### Performance
 Availability, capacity, resources
