@@ -23,3 +23,17 @@ every day till it hits its limit of capital allocation. When it reaches this poi
 The property we are trying to exploit is mean-reversion of the return of a stock in the universe to the average return of all the stocks in the stock universe. We need a way to know whether the stocks in a stock universe exhibt
 this behavouir. To check if mean-reversion is indeed occurring we shall use the ADF test and also the Hurst Exponent tests. Another problem is we need a way of creating a mean-reverting returns stock universe. How do we go
 about picking the stock universe? We need a way to systemise this picking of the stock universe. For the moment, we will ignore this important point and deal with it later.
+
+#### Implementation Details
+The strategy will be implemented in R will need to be usable by the Event Driven System. When creating a Strategy object it must keep track of what positions it is long and which positions it is short (and by how much).
+That is, a Strategy needs to keep track of its factor portfolio. This is because, the buy/sell/hold decisions it needs to make is dependent on the current factor portfolio it is holding. The Strategy should have a method
+that outputs its trading signals - and to make this capital investment independent - it will output what proportion (instead of exact amounts) of capital should be invested in the factor portfolio. In order for it to create
+trading signals it also needs to be fed the relevant Market Events which includes the newest stock price of each of the stocks in the factor portfolios stock universe. It also clearly requires a specified stock universe to be
+decided on also.
+
+class Strategy
+StrategyConstructor
+
+
+***
+The Strategy Object needs to be aware of its current factor portfolio holdings in terms of the proportions.

@@ -37,9 +37,12 @@ most robust, stress tested, space/time optimised algorithms that are of use for 
 With all of the above said, essentially what I currently plan to do is implement the RESEARCH/BACKTESTING parts of the trading system in R and the EXECUTION/LIVE parts in C++. Note that speed performance is really important in
 executing orders due to the slippage that will result from large latencies. As mentioned above, however, we may start by implementing in R and then shifting to C++ for speed optimisation. Reading more about OOP in R, I'm having
 second thoughts about converting this eventually into C++. We can always use Python instead however. So it's decided that we will code everything in Python except where speed is necessary we will use C++ and strategies we may
-use R or Python.
+use R or Python... Actually, I've changed my mind again. We will always use C++ unless there are better packages avaliable in Python or R.
 
 C++ communicates with the MySQL Securities Master Database using MySQL C++ Connector, Python communicates with the MySQL SMD using MySQL Python Connector, R doesn't need to communicate directly to the SMD.
 We need to be careful in choosing a Broker API so that either C++ or Python can communicate with it - either directly or through some community wrapper class such as IBPy plugin for Interactive Brokerage. 
 R and Python can communicate using the RPy plugin. For data analysis in Python we will use the SciPy, NumPy and Pandas libraries. Python is great at communicating with any other system or protocol - including the internet - so
-it will be our choice for data scraping. Finally, there are ways to embed C++ code into R and Python thus completing the required communications between the different languages/databases/apis.
+it will be our choice for data scraping. Finally, there are ways to embed C++ code into R and Python thus completing the required communications between the different languages/databases/apis. Rcpp allows R an C++ to communicate.
+
+Final Decision: We will create strategies in R or Python (dependning on the statisitical/library needs of the strategy) and everything else will be prototyped in C++ as I have the most experience with C/C++ - so python will slow
+me down. Of course, whenever necessary/beneficial we can diverge from this plan. Also I plan to learn more Python so that I become skilled enough to outspeed my development speed in C++.
