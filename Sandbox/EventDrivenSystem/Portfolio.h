@@ -1,8 +1,14 @@
+// =============================================================================
+// header guard
 #ifndef _PORTFOLIO_H
 #define _PORTFOLIO_H
 
+// =============================================================================
+// include dependencies
 #include <vector>
 
+// =============================================================================
+// class definition
 // Our trading system will use factor portfolios - so we won't have signals for individual stocks - but instead we have target portfolios from each factor strategy.
 
 class Portfolio{
