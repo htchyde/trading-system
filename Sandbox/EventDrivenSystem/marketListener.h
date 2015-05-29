@@ -30,8 +30,9 @@ class MarketListener{
 		std::vector<Strategy*>			strategy_universe;	// list of strategies the listener is listening for (pointers used because Strategy class is abstract)
 		std::queue< std::unique_ptr<Event> >*	event_queue_ptr;	// where the market events should be sent to
 
-						MarketListener(std::vector<Strategy*>){ };
-		std::queue<MarketEvent>		getNewMarketEvents(void){ return std::queue<MarketEvent>(); };
+							MarketListener(std::vector<Strategy*> strategy_universe) : strategy_universe(strategy_universe){ };
+		std::queue< std::unique_ptr<Event> >	getNewMarketEvents(void);
+//		void					getNewMarketEvents(void);
 	private:
 };
 

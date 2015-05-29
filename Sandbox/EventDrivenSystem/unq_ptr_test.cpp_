@@ -1,0 +1,16 @@
+#include <queue>
+#include <string>
+
+struct base{
+	virtual ~base() { };
+};
+
+int main(void){
+	base* s = new base();
+	std::queue< std::unique_ptr<base> > q;
+	std::make_unique<base>();
+	q.push(std::make_unique<base>());
+
+	//q.push(std::move(p));
+	return 0;
+}

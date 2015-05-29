@@ -19,6 +19,7 @@ class MarketData {
 class OHLC_MarketData : public MarketData {
 	public:
 		Price 		open, high, low, close;
+
 				OHLC_MarketData(Price open, Price high, Price low, Price close) : open(open), high(high), low(low), close(close) { };
 
 };

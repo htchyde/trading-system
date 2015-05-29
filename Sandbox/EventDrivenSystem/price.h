@@ -11,6 +11,7 @@ class Price{
 	public:
 		double 		quantity;
 //		void 		convertToDifferentCurrency(...);
+				Price(double quantity) : quantity(quantity){ };
 };
 
 #endif

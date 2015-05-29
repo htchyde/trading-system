@@ -6,7 +6,7 @@
 // =============================================================================
 // include dependencies
 #include <queue>
-
+#include <iostream>
 #include "price.h"
 #include "marketdata.h"
 #include "strategy.h"
@@ -22,7 +22,7 @@
 class Event{
 	public:
 		// datetime 		datetime_created   		// time the event was created - either use the <ctime.h> library or boost date_time library...
-		virtual void 		handleEvent(void){ };
+		virtual void 		handleEvent(void){ std::cout << "Event occurred \n";};
 
 					Event(void){ }; // default constructor should set the datetime_created value
 };
@@ -41,15 +41,15 @@ class MarketEvent : public Event{
 					MarketEvent(Strategy* strategy_ptr): strategy_ptr(strategy_ptr){ };
 };
 
-class OHLCMarketEvent : public MarketEvent{
+class OHLC_MarketEvent : public MarketEvent{
 // OHLC Data from the Market has been received
 	public:
 		OHLC_MarketData		OHLC;
 
-//					OHLCMarketEvent(Price open, Price high, Price low, Price close, Strategy* strategy_ptr): OHLC(open, high, close, low), MarketEvent(strategy_ptr) { };
-					OHLCMarketEvent(OHLC_MarketData OHLC, Strategy* strategy_ptr): OHLC(OHLC), MarketEvent(strategy_ptr) { };
+//					OHLC_MarketEvent(Price open, Price high, Price low, Price close, Strategy* strategy_ptr): OHLC(open, high, close, low), MarketEvent(strategy_ptr) { };
+					OHLC_MarketEvent(OHLC_MarketData OHLC, Strategy* strategy_ptr): OHLC(OHLC), MarketEvent(strategy_ptr) { };
 //		virtual void		handleEvent(void){ strategy_ptr->constructTargetPortfolio(open,high,low,close); }; // Feeds OHLC Market data into each of the relevant strategies so that they can provide their trading signals / factor portfolio
-		virtual void		handleEvent(void){ strategy_ptr->constructTargetPortfolio(OHLC); }; // Feeds OHLC Market data into each of the relevant strategies so that they can provide their trading signals / factor portfolio
+		virtual void		handleEvent(void){ std::cout<<"OHLC MARKET EVENT OCCURRED.\n"; strategy_ptr->constructTargetPortfolio(OHLC); }; // Feeds OHLC Market data into each of the relevant strategies so that they can provide their trading signals / factor portfolio
 };
 
 class OrderEvent : public Event{

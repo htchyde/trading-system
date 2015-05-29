@@ -16,7 +16,7 @@
 
 int main(void){
 	int i = 0;
-	std::queue< std::unique_ptr<Event> > 	event_queue; // ptr because we need polymorphic behavouir - all events should be created on the heap - this is necessary for extended scope reasons - unique pointers help with memory management issues and also it will mean the events can't be duplicated which could cause big problems if the same event gets added to the queue multiple times.
+	std::queue< std::unique_ptr<Event> > 	event_queue; // ptr because we need polymorphic behaviour - all events should be created on the heap - this is necessary for extended scope reasons - unique pointers help with memory management issues and also it will mean the events can't be duplicated which could cause big problems if the same event gets added to the queue multiple times.
 	
 	// Declare the strategies you want to deploy:
 	// Note we will have to turn off the whole system if we want to add a new strategy and then restart the system - one alternative solution would be to have a Strategy Event and Startegy Listener Object and somehow make it aware of the address to where the new strategy code is (or an old one we chose not to deploy earlier for some reason - maybe we were fixing bugs). We may also want an event to remove a strategy from the list of strategies to deploy..
@@ -37,13 +37,16 @@ int main(void){
 	// Listen for the Market Events that the strategies need to know about 
 	MarketListener		market_listener = MarketListener(strategy_universe);
 
-
 	// Keep waiting for new events to occur - note in this is only correct for the live execution - for backtesting we need to stop this while loop once all of the past data has been seen
 	while(true){
 		// for backtesting version of system we need to have the following line: if(no more backtesting data) then {break;}
 
-		market_listener.getNewMarketEvents(); // Get most recent market events and update event_queue
-		
+		std::queue< std::unique_ptr<Event> > new_market_events = market_listener.getNewMarketEvents();
+		while(!new_market_events.empty()){
+			event_queue.push(std::move(new_market_events.front()));
+			new_market_events.pop();
+		}
+
 		while(!event_queue.empty()){ // Don't get the most recent market event until all current events have been dealt with
 			// Deal with the first event in the event queue
 			std::unique_ptr<Event> curr_event = std::move(event_queue.front());
